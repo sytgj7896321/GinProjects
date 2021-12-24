@@ -5,6 +5,6 @@ import (
 )
 
 func download(c *gin.Context) {
-	fileName := c.Query("fileName")
-	c.File(fileDir + fileName)
+	filename := c.Query("file")
+	c.File(fileDir + filename)
 }
