@@ -22,3 +22,14 @@ func ImageError(c *gin.Context, err error) bool {
 	}
 	return false
 }
+
+func TransferError(c *gin.Context, err error) bool {
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"result": "not ok",
+		})
+		return true
+	}
+	return false
+}
