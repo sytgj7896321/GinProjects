@@ -1,11 +1,9 @@
 package main
 
 import (
-	"GinProjects/database"
 	"GinProjects/myLibary"
 	"GinProjects/mySSH"
 	"bytes"
-	"database/sql"
 	"flag"
 	"github.com/dimiro1/banner"
 	"github.com/gin-gonic/gin"
@@ -18,32 +16,32 @@ import (
 var (
 	fileDir     string
 	servicePort string
-	dbOnOff     string
-	sftpClient  *sftp.Client
+	//dbOnOff     string
+	sftpClient *sftp.Client
 )
 
 func init() {
-	flag.StringVar(&dbOnOff, "dbSwitch", "false", "establish database connection or not")
+	//flag.StringVar(&dbOnOff, "dbSwitch", "false", "establish database connection or not")
 	flag.StringVar(&fileDir, "fileDir", "./files", "specify a path for save files to local")
 	flag.StringVar(&servicePort, "servicePort", "8080", "specify FileService port")
 	mySSH.InitSSHFlag()
-	database.InitFlag()
+	//database.InitFlag()
 	flag.Parse()
 }
 
 func main() {
 	banner.Init(os.Stdout, true, true, bytes.NewBufferString(myLibary.Banner("Banner2")))
 	//DataBase
-	if dbOnOff == "true" {
-		db, err := database.NewDatabaseConnection()
-		myLibary.FailOnError(err, "Fail to open database connection")
-		defer func(DB *sql.DB) {
-			err := DB.Close()
-			myLibary.FailOnError(err, "Fail to close database connection")
-		}(db)
-		err = db.Ping()
-		myLibary.FailOnError(err, "Database connection testing failed")
-	}
+	//if dbOnOff == "true" {
+	//	db, err := database.NewDatabaseConnection()
+	//	myLibary.FailOnError(err, "Fail to open database connection")
+	//	defer func(DB *sql.DB) {
+	//		err := DB.Close()
+	//		myLibary.FailOnError(err, "Fail to close database connection")
+	//	}(db)
+	//	err = db.Ping()
+	//	myLibary.FailOnError(err, "Database connection testing failed")
+	//}
 
 	//SFTP
 	var err error

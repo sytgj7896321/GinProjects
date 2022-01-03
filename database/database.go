@@ -20,9 +20,9 @@ var (
 func InitFlag() {
 	flag.StringVar(&driver, "driver", "mysql", "specify database driver will be used")
 	flag.StringVar(&dbUser, "dbUser", "root", "")
-	flag.StringVar(&dbPass, "dbPass", "", "")
-	flag.StringVar(&endpoint, "endpoint", "127.0.0.1:3306", "database ip:port")
-	flag.StringVar(&instance, "instance", "", "specify database instance will be used")
+	flag.StringVar(&dbPass, "dbPass", "Admin#1234", "")
+	flag.StringVar(&endpoint, "endpoint", "192.168.123.24:3306", "database ip:port")
+	flag.StringVar(&instance, "instance", "secure", "specify database instance will be used")
 	flag.StringVar(&options, "options", "", "database connection options")
 }
 
