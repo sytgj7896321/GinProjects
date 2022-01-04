@@ -33,3 +33,14 @@ func TransferError(c *gin.Context, err error) bool {
 	}
 	return false
 }
+
+func InternalError(c *gin.Context, err error) bool {
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "internal server error",
+		})
+		return true
+	}
+	return false
+}

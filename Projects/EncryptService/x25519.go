@@ -1,8 +1,11 @@
 package main
 
 import (
+	"GinProjects/myLibary"
+	"bytes"
 	"filippo.io/age"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	"log"
 	"net/http"
 )
@@ -14,19 +17,11 @@ type KeyPair struct {
 
 func x25519KeyPair(c *gin.Context) {
 	identity, err := age.GenerateX25519Identity()
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "internal server error",
-		})
+	if myLibary.InternalError(c, err) {
 		return
 	}
 	_, err = Pre1.Exec(identity.Recipient().String(), identity.String())
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "internal server error",
-		})
+	if myLibary.InternalError(c, err) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
@@ -42,7 +37,7 @@ func x25519Encrypt(c *gin.Context) {
 		})
 		return
 	}
-	_, err := age.ParseX25519Recipient(publicKey)
+	recipient, err := age.ParseX25519Recipient(publicKey)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -50,12 +45,12 @@ func x25519Encrypt(c *gin.Context) {
 		})
 		return
 	}
-	_, header, err := c.Request.FormFile("file")
+	file, err := c.FormFile("file")
 	if err != nil {
 		if err.Error() != "http: no such file" {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "internal server error",
+				"error": "internal server error",
 			})
 			return
 		} else {
@@ -65,13 +60,46 @@ func x25519Encrypt(c *gin.Context) {
 			return
 		}
 	}
-	if header.Size > 8<<20 {
+	if file.Size > 8<<20 {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "file is bigger than 16MB",
+			"message": "file is bigger than 8MB",
 		})
 		return
 	}
-	//age.Encrypt()
+
+	f, err := file.Open()
+	if myLibary.InternalError(c, err) {
+		return
+	}
+
+	src, err := ioutil.ReadAll(f)
+	if myLibary.InternalError(c, err) {
+		return
+	}
+
+	err = f.Close()
+	if myLibary.InternalError(c, err) {
+		return
+	}
+
+	b := new(bytes.Buffer)
+	defer b.Reset()
+	encrypt, err := age.Encrypt(b, recipient)
+	if myLibary.InternalError(c, err) {
+		return
+	}
+
+	_, err = encrypt.Write(src)
+	if myLibary.InternalError(c, err) {
+		return
+	}
+
+	err = encrypt.Close()
+	if myLibary.InternalError(c, err) {
+		return
+	}
+
+	c.Data(http.StatusOK, "application/octet-stream", b.Bytes())
 }
 
 func x25519Decrypt(c *gin.Context) {
