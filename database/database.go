@@ -37,7 +37,7 @@ func NewDatabaseConnection() (*sql.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	db.SetMaxOpenConns(100)
-	db.SetMaxIdleConns(100)
+	db.SetMaxOpenConns(300)
+	db.SetMaxIdleConns(300)
 	return db, nil
 }
