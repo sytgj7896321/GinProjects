@@ -1,0 +1,11 @@
+---
+gin:
+  - name: greeter
+    port: 8081
+    enabled: true
+    commonService:
+      enabled: true
+    interceptors:
+      timeout:
+        enabled: true
+        timeoutMs: 5000

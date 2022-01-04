@@ -1,4 +1,4 @@
-package rsa
+package main
 
 import (
 	"crypto/rand"
