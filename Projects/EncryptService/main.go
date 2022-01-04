@@ -73,9 +73,10 @@ func startServer() {
 	router := gin.Default()
 	router.MaxMultipartMemory = 8 << 20 // 8 MiB
 
-	router.GET("/x25519PubKey", x25519KeyPair)
-	router.POST("/x25519Encrypt", x25519Encrypt)
-	router.POST("/x25519Decrypt", x25519Decrypt)
+	unitrust := router.Group("/unitrust")
+	unitrust.GET("/x25519PubKey", x25519KeyPair)
+	unitrust.POST("/x25519Encrypt", x25519Encrypt)
+	unitrust.POST("/x25519Decrypt", x25519Decrypt)
 
 	err := router.Run(":" + strconv.Itoa(servicePort))
 	if err != nil {
