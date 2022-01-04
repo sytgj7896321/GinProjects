@@ -5,14 +5,14 @@ import (
 	"GinProjects/database"
 	"GinProjects/myLibary"
 	"bytes"
+	"context"
 	"database/sql"
 	"flag"
 	"github.com/dimiro1/banner"
-	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
-	"log"
+	rkboot "github.com/rookie-ninja/rk-boot"
+	rkbootgin "github.com/rookie-ninja/rk-boot/gin"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -70,18 +70,17 @@ func connectDB() func() error {
 }
 
 func startServer() {
-	router := gin.Default()
-	router.MaxMultipartMemory = 8 << 20 // 8 MiB
+	boot := rkboot.NewBoot()
+	entry := rkbootgin.GetGinEntry("unitrust")
+	entry.Router.MaxMultipartMemory = 8 << 20 // 8 MiB
 
-	unitrust := router.Group("/unitrust")
+	unitrust := entry.Router.Group("/unitrust")
 	unitrust.GET("/x25519PubKey", x25519KeyPair)
 	unitrust.POST("/x25519Encrypt", x25519Encrypt)
 	unitrust.POST("/x25519Decrypt", x25519Decrypt)
 
-	err := router.Run(":" + strconv.Itoa(servicePort))
-	if err != nil {
-		log.Fatalf("Start Service Failed, %s\n", err)
-	}
+	boot.Bootstrap(context.TODO())
+	boot.WaitForShutdownSig(context.TODO())
 }
 
 func prepare(sql string) *sql.Stmt {

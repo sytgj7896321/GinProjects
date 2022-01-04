@@ -1,6 +1,6 @@
 ---
 gin:
-  - name: greeter
+  - name: unitrust
     port: 8081
     enabled: true
     commonService:
