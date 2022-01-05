@@ -10,8 +10,8 @@ import (
 	"flag"
 	"github.com/dimiro1/banner"
 	"github.com/go-redis/redis/v8"
-	rkboot "github.com/rookie-ninja/rk-boot"
-	rkbootgin "github.com/rookie-ninja/rk-boot/gin"
+	"github.com/rookie-ninja/rk-boot"
+	"github.com/rookie-ninja/rk-boot/gin"
 	"os"
 	"strings"
 )
@@ -21,11 +21,9 @@ var (
 	Pre1        *sql.Stmt
 	Pre2        *sql.Stmt
 	RedisClient *redis.ClusterClient
-	servicePort int
 )
 
 func init() {
-	flag.IntVar(&servicePort, "port", 8080, "-port portNumber")
 	myRedis.InitFlag()
 	database.InitFlag()
 	flag.Parse()
@@ -65,7 +63,7 @@ func connectDB() func() error {
 	err = DB.Ping()
 	myLibary.FailOnError(err, "Database connection testing failed")
 	Pre1 = prepare("insert into keyPair values (?, ?)")
-	Pre2 = prepare("select `private_key` from keyPair where `public_key` = ?")
+	Pre2 = prepare("select `public_key`, `private_key` from keyPair where `public_key` = ?")
 	return DB.Close
 }
 
