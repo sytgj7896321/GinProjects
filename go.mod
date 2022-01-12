@@ -12,6 +12,7 @@ require (
 	github.com/pkg/sftp v1.13.4
 	github.com/rookie-ninja/rk-boot v1.4.1
 	github.com/rookie-ninja/rk-boot/gin v1.2.14
+	go.uber.org/zap v1.16.0 // indirect
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
 	golang.org/x/image v0.0.0-20211028202545-6944b10bf410 // indirect
 )

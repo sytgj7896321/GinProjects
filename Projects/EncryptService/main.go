@@ -7,7 +7,6 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
-	"flag"
 	"github.com/dimiro1/banner"
 	"github.com/go-redis/redis/v8"
 	"github.com/rookie-ninja/rk-boot"
@@ -26,15 +25,11 @@ var (
 func init() {
 	myRedis.InitFlag()
 	database.InitFlag()
-	flag.Parse()
 }
 
 func main() {
 	//Banner
 	banner.Init(os.Stdout, true, true, bytes.NewBufferString(myLibary.Banner("Banner2")))
-
-	//Redis
-	RedisClient = connectRedis()
 
 	//Database
 	closeDB := connectDB()
@@ -42,6 +37,15 @@ func main() {
 		err := closeDB()
 		myLibary.FailOnError(err, "Fail to close database connection")
 	}()
+
+	//Redis
+	RedisClient = connectRedis()
+	defer func(RedisClient *redis.ClusterClient) {
+		err := RedisClient.Close()
+		if err != nil {
+			myLibary.FailOnError(err, "Fail to close redis connection")
+		}
+	}(RedisClient)
 
 	//API
 	startServer()
@@ -71,7 +75,6 @@ func startServer() {
 	boot := rkboot.NewBoot()
 	entry := rkbootgin.GetGinEntry("unitrust")
 	entry.Router.MaxMultipartMemory = 8 << 20 // 8 MiB
-
 	unitrust := entry.Router.Group("/unitrust")
 	unitrust.GET("/x25519PubKey", x25519KeyPair)
 	unitrust.POST("/x25519Encrypt", x25519Encrypt)

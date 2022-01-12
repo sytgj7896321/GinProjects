@@ -161,8 +161,7 @@ func x25519Decrypt(c *gin.Context) {
 			})
 			return
 		}
-		private := pub.PrivateKey
-		if decrypt(c, err, private, publicKey, file, true) {
+		if decrypt(c, err, pub.PrivateKey, pub.PublicKey, file, true) {
 			return
 		}
 	} else {
@@ -184,10 +183,11 @@ func decrypt(c *gin.Context, err error, private string, publicKey string, file *
 	if isSet == true {
 		set := RedisClient.Set(context.TODO(), publicKey, private, 20*time.Minute)
 		myLibary.InternalError(c, set.Err())
+
 	}
 	if file.Size > 9<<20 {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "file is bigger than 8MB",
+			"message": "file is bigger than 9MB",
 		})
 		return true
 	}
